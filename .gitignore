@@ -1,0 +1,31 @@
+
+# Files
+.classpath
+.externalToolBuilders
+.gradle
+.project
+.pydevproject
+.settings
+.sonar
+*~
+*.ipr
+*.iml
+*.iws
+*.swp
+*.DS_Store
+*.snap.debug
+dependency-reduced-pom.xml
+
+# Directories
+.idea/
+.run/
+.venv/
+_site/
+build/
+dist/
+docs/_build/
+gen-java/
+gen-javabean/
+gen-py/
+node_modules/
+target/
