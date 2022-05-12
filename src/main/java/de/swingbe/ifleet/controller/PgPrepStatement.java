@@ -1,16 +1,16 @@
 package de.swingbe.ifleet.controller;
 
 import de.swingbe.ifleet.model.LctMsg;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PgPrepStatement {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PgPrepStatement.class);
     private final PgConnection pgCon;
 
     public PgPrepStatement(PgConnection connection) {
@@ -18,7 +18,7 @@ public class PgPrepStatement {
     }
 
     public void createTable(String table) {
-        System.out.println("createTable() start...");
+        LOG.debug("createTable() start...");
         Objects.requireNonNull(table, "table must not be null");
 
         try (Statement st = pgCon.getConnection().createStatement()) {
@@ -39,7 +39,7 @@ public class PgPrepStatement {
 
             pgCon.getConnection().commit();
 
-            System.out.println("Committed " + counts.length + " updates");
+            LOG.debug("createTable() Committed " + counts.length + " updates");
 
         } catch (SQLException ex) {
 
@@ -47,20 +47,17 @@ public class PgPrepStatement {
                 try {
                     pgCon.getConnection().rollback();
                 } catch (SQLException ex1) {
-                    Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-                    lgr.log(Level.WARNING, ex1.getMessage(), ex1);
+                    LOG.error("createTable() can not rollback connection" + ex.getMessage());
                 }
             }
-
-            Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.error("createTable() can not create table: " + table + " cos of: " + ex.getMessage());
         }
 
-        System.out.println("createTable() done.");
+        LOG.debug("createTable() done.");
     }
 
     public void insert(LctMsg lctMsg, String table) {
-        System.out.println("insert() start...");
+        LOG.debug("insert() start...");
         Objects.requireNonNull(lctMsg, "lctMsg must not be null");
         Objects.requireNonNull(table, "table     must not be null");
 
@@ -80,7 +77,7 @@ public class PgPrepStatement {
 
             pgCon.getConnection().commit();
 
-            System.out.println("Committed " + counts.length + " updates");
+            LOG.debug("insert() Committed " + counts.length + " updates");
 
         } catch (SQLException ex) {
 
@@ -88,20 +85,17 @@ public class PgPrepStatement {
                 try {
                     pgCon.getConnection().rollback();
                 } catch (SQLException ex1) {
-                    Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-                    lgr.log(Level.WARNING, ex1.getMessage(), ex1);
+                    LOG.error("insert() can not rollback connection" + ex.getMessage());
                 }
             }
-
-            Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.error("insert() can not insert into table: " + table + " cos of: " + ex.getMessage());
         }
 
-        System.out.println("insert() done.");
+        LOG.debug("insert() done.");
     }
 
     public boolean hasTable(String table, String schema) {
-        System.out.println("hasTable() start...");
+        LOG.debug("hasTable() start...");
         Objects.requireNonNull(table, "table must not be null");
         Objects.requireNonNull(schema, "schema must not be null");
 
@@ -118,24 +112,22 @@ public class PgPrepStatement {
             }
 
         } catch (SQLException ex) {
-
-            Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.error("hasTable() can not execute query for: " + table + " cos of: " + ex.getMessage());
         }
 
-        System.out.println("result: " + result);
+        LOG.debug("hasTable() result: " + result);
         if (result != null && result.equals("true")) {
-            System.out.println("result: " + result + " equals true");
+            LOG.debug("hasTable() result: " + result + " equals true");
             return true;
         } else {
-            System.out.println("result: " + result + " equals true NOT");
+            LOG.debug("hasTable() result: " + result + " equals true NOT");
         }
-        System.out.println("hasTable() done.");
+        LOG.debug("hasTable() done.");
         return false;
     }
 
     public boolean hasLctMsg(LctMsg lctMsg, String table) {
-        System.out.println("hasLct() start...");
+        LOG.debug("hasLctMsg() start...");
         Objects.requireNonNull(lctMsg, "lctMsg must not be null");
         Objects.requireNonNull(table, "table must not be null");
 
@@ -153,18 +145,17 @@ public class PgPrepStatement {
 
         } catch (SQLException ex) {
 
-            Logger lgr = Logger.getLogger(PgPrepStatement.class.getName());
-            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+            LOG.error("hasTable() can not execute query for: " + table + " cos of: " + ex.getMessage());
         }
 
-        System.out.println("result: " + result);
+        LOG.debug("hasLctMsg() result: " + result);
         if (result != null && result.equals("true")) {
-            System.out.println("result: " + result + " equals true");
+            LOG.debug("hasLctMsg() result: " + result + " equals true");
             return true;
         } else {
-            System.out.println("result: " + result + " equals true NOT");
+            LOG.debug("hasLctMsg() result: " + result + " equals true NOT");
         }
-        System.out.println("hasLct() done.");
+        LOG.debug("hasLctMsg() done.");
         return false;
     }
 }

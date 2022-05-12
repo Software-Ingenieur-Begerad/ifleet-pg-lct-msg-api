@@ -1,13 +1,15 @@
 package de.swingbe.ifleet.controller;
 
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PgConnection {
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(PgConnection.class);
+
     private final String host;
     private final String port;
     private final String db;
@@ -54,17 +56,15 @@ public class PgConnection {
     }
 
     public void setConnection() {
-        //TODO switch to logger
-        System.out.println("setConnection() start...");
+        LOG.debug("setConnection() start...");
+
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection(url, usr, key);
             } catch (SQLException e) {
-                //TODO handle logging properly
-                Logger lgr = Logger.getLogger(PgConnection.class.getName());
-                lgr.log(Level.SEVERE, e.getMessage(), e);
+                LOG.error("setConnection() can not connect to : " + url + " with user: " + usr + " cos of: " + e.getMessage());
             }
         }
-        System.out.println("setConnection() done.");
+        LOG.debug("setConnection() done.");
     }
 }
