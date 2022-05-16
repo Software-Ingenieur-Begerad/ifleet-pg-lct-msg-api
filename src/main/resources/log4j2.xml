@@ -26,7 +26,7 @@
     <Loggers>
         <!--override log level for specified package-->
         <Logger name="de.swingbe" level="debug" additivity="false">
-            <appender-ref ref="rollingFile" level="warn"/>
+            <appender-ref ref="rollingFile" level="debug"/>
         </Logger>
         <Root level="debug" additivity="false">
             <appender-ref ref="console"/>
