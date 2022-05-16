@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<!--the status logger is used internally by log4j2 components-->
+<Configuration status="warn">
     <Appenders>
-        # Rolling appender
+        <!--rolling appender-->
         <RollingFile name="rollingFile"
                      fileName="log.txt"
                      filePattern="log-%d{yyyy-MM-dd}-%i.txt.gz"
@@ -11,24 +12,23 @@
                 </Pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="21MB"/>
+                <SizeBasedTriggeringPolicy size="5MB"/>
             </Policies>
-            <DefaultRolloverStrategy max="50"/>
+            <DefaultRolloverStrategy max="20"/>
         </RollingFile>
 
-        # Console appender
+        <!--console appender-->
         <Console name="console" target="SYSTEM_OUT">
-            # Pattern of log message for console appender
             <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} %c{1} - %msg%n"/>
         </Console>
     </Appenders>
 
     <Loggers>
-        # Override log level for specified package
-        <Logger name="de.swingbe" level="all">
-            <appender-ref ref="rollingFile" level="all"/>
+        <!--override log level for specified package-->
+        <Logger name="de.swingbe" level="debug" additivity="false">
+            <appender-ref ref="rollingFile" level="warn"/>
         </Logger>
-        <Root level="all" additivity="false">
+        <Root level="debug" additivity="false">
             <appender-ref ref="console"/>
         </Root>
     </Loggers>
