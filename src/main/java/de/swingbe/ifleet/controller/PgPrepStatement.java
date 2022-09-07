@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class PgPrepStatement {
@@ -92,6 +93,47 @@ public class PgPrepStatement {
         }
 
         LOG.debug("insert() done.");
+    }
+
+    public ArrayList<ArrayList<String>> get(String date, String tenant, String time, String trip) {
+        LOG.debug("get() start...");
+        Objects.requireNonNull(date, "arg must not be null");
+        Objects.requireNonNull(tenant, "arg must not be null");
+        Objects.requireNonNull(time, "arg must not be null");
+        Objects.requireNonNull(trip, "arg must not be null");
+        /**
+         * TODO CLEAN UP EXAMPLE
+         * select vc_trip,vc_tenant,vc_date,vc_time,vc_lat,vc_lon
+         * from lct_msg where vc_date like '%' and vc_tenant like '%' and vc_trip like '4378018';
+         */
+
+        String query = "SELECT vc_trip,vc_tenant,vc_date,vc_time,vc_lat,vc_lon from lct_msg where vc_date like '" + date + "' and vc_tenant like '" + tenant + "' and vc_time like '" + time + "' and vc_trip like '" + trip + "';";
+
+        ArrayList<ArrayList<String>> aryResult = null;
+        //create prepared statement using placeholders instead of directly writing values
+        try (PreparedStatement pst = pgCon.getConnection().prepareStatement(query); ResultSet rs = pst.executeQuery()) {
+
+            //advance cursor to the next record
+            //return false if there are no more records in the aryRecord set
+            while (rs.next()) {
+                ArrayList<String> aryRecord = new ArrayList<>();
+                aryRecord.add(rs.getString(1));
+                aryRecord.add(rs.getString(2));
+                aryRecord.add(rs.getString(3));
+                aryRecord.add(rs.getString(4));
+                aryRecord.add(rs.getString(5));
+                aryRecord.add(rs.getString(6));
+                if (aryResult == null) {
+                    aryResult = new ArrayList<>();
+                }
+                aryResult.add(aryRecord);
+            }
+        } catch (SQLException ex) {
+            LOG.error("get() can not execute query cos of: " + ex.getMessage());
+        }
+
+        LOG.debug("get() done.");
+        return aryResult;
     }
 
     public boolean hasTable(String table, String schema) {
