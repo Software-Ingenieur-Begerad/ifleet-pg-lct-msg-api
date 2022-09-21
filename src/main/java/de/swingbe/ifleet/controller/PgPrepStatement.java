@@ -57,10 +57,49 @@ public class PgPrepStatement {
         LOG.debug("createTable() done.");
     }
 
+    public void update(LctMsg lctMsg, String table) {
+        LOG.debug("update() start...");
+        Objects.requireNonNull(lctMsg, "arg must not be null");
+        Objects.requireNonNull(table, "arg must not be null");
+
+        try (Statement st = pgCon.getConnection().createStatement()) {
+
+            //autocommit should always be turned off when doing batch updates
+            pgCon.getConnection().setAutoCommit(false);
+
+            //sql query
+            LOG.debug("update() trip: " + lctMsg.getTrip());
+            String sql = "UPDATE " + table + "SET vc_route = " + lctMsg.getRoute() + ", vc_tenant = " + lctMsg.getTenant() + ", vc_date = " + lctMsg.getDate() + ", vc_time = " + lctMsg.getTime() + ", vc_lat = " + lctMsg.getLat() + ", vc_lon = " + lctMsg.getLon() + " WHERE vc_trip = '" + lctMsg.getTrip() + "';";
+
+            //insert lct
+            st.addBatch(sql);
+
+            //method returns an array of committed changes
+            int[] counts = st.executeBatch();
+
+            pgCon.getConnection().commit();
+
+            LOG.debug("update() Committed " + counts.length + " updates");
+
+        } catch (SQLException ex) {
+
+            if (pgCon != null) {
+                try {
+                    pgCon.getConnection().rollback();
+                } catch (SQLException ex1) {
+                    LOG.error("update() can not rollback connection" + ex.getMessage());
+                }
+            }
+            LOG.error("update() can not update table: " + table + " cos of: " + ex.getMessage());
+        }
+
+        LOG.debug("update() done.");
+    }
+
     public void insert(LctMsg lctMsg, String table) {
         LOG.debug("insert() start...");
-        Objects.requireNonNull(lctMsg, "lctMsg must not be null");
-        Objects.requireNonNull(table, "table must not be null");
+        Objects.requireNonNull(lctMsg, "arg must not be null");
+        Objects.requireNonNull(table, "arg must not be null");
 
         try (Statement st = pgCon.getConnection().createStatement()) {
 
@@ -167,8 +206,8 @@ public class PgPrepStatement {
 
     public boolean hasLctMsg(LctMsg lctMsg, String table) {
         LOG.debug("hasLctMsg() start...");
-        Objects.requireNonNull(lctMsg, "lctMsg must not be null");
-        Objects.requireNonNull(table, "table must not be null");
+        Objects.requireNonNull(lctMsg, "arg must not be null");
+        Objects.requireNonNull(table, "arg must not be null");
 
         String query = "SELECT CASE WHEN EXISTS (SELECT * FROM " + table + " where vc_date='" + lctMsg.getDate() + "' AND vc_trip='" + lctMsg.getTrip() + "') THEN 'true' ELSE 'false' END;";
 
@@ -195,6 +234,39 @@ public class PgPrepStatement {
             LOG.debug("hasLctMsg() result: " + result + " equals true NOT");
         }
         LOG.debug("hasLctMsg() done.");
+        return false;
+    }
+
+    public boolean hasLctMsgAlb(LctMsg lctMsg, String table) {
+        LOG.debug("hasLctMsgAlb() start...");
+        Objects.requireNonNull(lctMsg, "arg must not be null");
+        Objects.requireNonNull(table, "arg must not be null");
+
+        String query = "SELECT CASE WHEN EXISTS (SELECT * FROM " + table + " WHERE vc_trip='" + lctMsg.getTrip() + "') THEN 'true' ELSE 'false' END;";
+
+        String result = null;
+        //create prepared statement using placeholders instead of directly writing values
+        try (PreparedStatement pst = pgCon.getConnection().prepareStatement(query); ResultSet rs = pst.executeQuery()) {
+
+            //advance cursor to the next record
+            //return false if there are no more records in the result set
+            while (rs.next()) {
+                result = rs.getString(1);
+            }
+
+        } catch (SQLException ex) {
+
+            LOG.error("hasLctMsgAlb() can not execute query for: " + table + " cos of: " + ex.getMessage());
+        }
+
+        LOG.debug("hasLctMsgAlb() result: " + result);
+        if (result != null && result.equals("true")) {
+            LOG.debug("hasLctMsgAlb() result: " + result + " equals true");
+            return true;
+        } else {
+            LOG.debug("hasLctMsgAlb() result: " + result + " equals true NOT");
+        }
+        LOG.debug("hasLctMsgAlb() done.");
         return false;
     }
 }
