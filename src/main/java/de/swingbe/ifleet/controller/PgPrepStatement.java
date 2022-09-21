@@ -134,15 +134,16 @@ public class PgPrepStatement {
         LOG.debug("insert() done.");
     }
 
-    public ArrayList<ArrayList<String>> get(String date, String tenant, String time, String trip, String route) {
+    public ArrayList<ArrayList<String>> get(String date, String tenant, String time, String trip, String route, String table) {
         LOG.debug("get() start...");
         Objects.requireNonNull(date, "arg must not be null");
         Objects.requireNonNull(tenant, "arg must not be null");
         Objects.requireNonNull(time, "arg must not be null");
         Objects.requireNonNull(trip, "arg must not be null");
         Objects.requireNonNull(route, "arg must not be null");
+        Objects.requireNonNull(table, "arg must not be null");
 
-        String query = "SELECT vc_trip,vc_route,vc_tenant,vc_date,vc_time,vc_lat,vc_lon from lct_msg where vc_date like '" + date + "' and vc_tenant like '" + tenant + "' and vc_time like '" + time + "' and vc_trip like '" + trip + "';";
+        String query = "SELECT vc_trip,vc_route,vc_tenant,vc_date,vc_time,vc_lat,vc_lon FROM " + table + " WHERE vc_date like '" + date + "' and vc_tenant like '" + tenant + "' and vc_time like '" + time + "' and vc_trip like '" + trip + "';";
 
         ArrayList<ArrayList<String>> aryResult = null;
         //create prepared statement using placeholders instead of directly writing values

@@ -19,12 +19,12 @@ public class PgConnection {
     private Connection connection = null;
 
     public PgConnection(String host, String port, String db, String usr, String key) {
-        this.host = Objects.requireNonNull(host, "host must not be null");
-        this.port = Objects.requireNonNull(port, "port must not be null");
-        this.db = Objects.requireNonNull(db, "db must not be null");
+        this.host = Objects.requireNonNull(host, "arg must not be null");
+        this.port = Objects.requireNonNull(port, "arg must not be null");
+        this.db = Objects.requireNonNull(db, "arg must not be null");
         this.url = "jdbc:postgresql://" + host + ":" + port + "/" + db;
-        this.usr = Objects.requireNonNull(usr, "usr must not be null");
-        this.key = Objects.requireNonNull(key, "key must not be null");
+        this.usr = Objects.requireNonNull(usr, "arg must not be null");
+        this.key = Objects.requireNonNull(key, "arg must not be null");
     }
 
     public String getHost() {
