@@ -28,7 +28,7 @@
         <Logger name="de.swingbe" level="debug" additivity="true">
             <appender-ref ref="rollingFile" level="debug"/>
         </Logger>
-        <Root level="debug" additivity="false">
+        <Root level="debug" additivity="true">
             <appender-ref ref="console"/>
         </Root>
     </Loggers>

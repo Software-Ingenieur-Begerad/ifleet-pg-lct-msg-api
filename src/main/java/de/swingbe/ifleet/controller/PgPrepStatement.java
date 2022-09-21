@@ -144,6 +144,7 @@ public class PgPrepStatement {
         Objects.requireNonNull(table, "arg must not be null");
 
         String query = "SELECT vc_trip,vc_route,vc_tenant,vc_date,vc_time,vc_lat,vc_lon FROM " + table + " WHERE vc_date like '" + date + "' and vc_tenant like '" + tenant + "' and vc_time like '" + time + "' and vc_trip like '" + trip + "';";
+        LOG.debug("get() query: " + query);
 
         ArrayList<ArrayList<String>> aryResult = null;
         //create prepared statement using placeholders instead of directly writing values
