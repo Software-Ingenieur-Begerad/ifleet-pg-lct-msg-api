@@ -69,7 +69,7 @@ public class PgPrepStatement {
 
             //sql query
             LOG.debug("update() trip: " + lctMsg.getTrip());
-            String sql = "UPDATE " + table + "SET vc_route = " + lctMsg.getRoute() + ", vc_tenant = " + lctMsg.getTenant() + ", vc_date = " + lctMsg.getDate() + ", vc_time = " + lctMsg.getTime() + ", vc_lat = " + lctMsg.getLat() + ", vc_lon = " + lctMsg.getLon() + " WHERE vc_trip = '" + lctMsg.getTrip() + "';";
+            String sql = "UPDATE " + table + "SET vc_route = '" + lctMsg.getRoute() + "', vc_tenant = '" + lctMsg.getTenant() + "', vc_date = '" + lctMsg.getDate() + "', vc_time = '" + lctMsg.getTime() + "', vc_lat = '" + lctMsg.getLat() + "', vc_lon = '" + lctMsg.getLon() + "' WHERE vc_trip = '" + lctMsg.getTrip() + "';";
 
             //insert lct
             st.addBatch(sql);
